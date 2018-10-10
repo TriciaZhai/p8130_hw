@@ -6,16 +6,16 @@ output: pdf_document
 ---
 
 #Problem 1
-1. for$\bar{X} =  \frac{1}{n}\sum_{i=1}^{n}X_{\text{i}}= EX$,
-$$
-for \bar{X} =  \frac{1}{n}\sum_{i=1}^{n}X_{\text{i}}= EX,
+1. for$\bar{X} =  \frac{1}{n}\sum_{i=1}^{n}X_{i}= EX$
 
+$$
 \begin{aligned}
-E(S^2) &= E(\frac{1}{n-1} \sum_{i=1}^{n}(X_i-\bar{X})^2)\\
-&=\frac{n}{n-1} E(\frac{1}{n}\sum_{i=1}^{n}(X_i-\bar{X})^2))\\
-&=\frac{n}{n-1} E[E(X_i}^2-2\bar{X}X_i+\bar{X}^2)]\\
-&=\frac{n}{n-1} E(E(X^2)-2\bar{X}EX+\barX^2)\\
-&=\frac{n}{n-1} (EX^2-\barX^2)\\
+E(S^2) 
+&= E(\frac{1}{n-1} \sum_{i=1}^{n}(X_{i}-\bar{X})^2)\\
+&=\frac{n}{n-1} E(\frac{1}{n}\sum_{i=1}^{n}(X_{i}-\bar{X})^2))\\
+&=\frac{n}{n-1} E[E(X_i^2-2\bar{X}X_i+\bar{X}^2)]\\
+&=\frac{n}{n-1} E(E(X^2)-2\bar{X}EX+\bar{X}^2)\\
+&=\frac{n}{n-1} (EX^2-\bar{X}^2)\\
 \end{aligned}
 $$
 2. 
@@ -34,21 +34,58 @@ $$
 \Rightarrow \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} - \bar{\bar{y}})^2 &= \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} -\bar{y_i})^2 + \sum_{i=1}^{k}\sum_{j=1}^{n_i}(\bar{y_i} - \bar{\bar{y}})^2\\
 \end{aligned}
 $$
+
 #Problem 2
 1. Hypothesis test: $H_0$ : BMI_base = BMI_6yrs, $\Delta = 0$;  $H_1$: BMI_base $\neq$ BMI_6yrs, $\Delta \neq 0$.
 $$
 t = \frac{\bar{d}-0}{S_d/\sqrt{n}}  \sim t_{(n-1)} 
 $$
 If $|t| > t_{n-1},_{1-2/\alpha}$, we can reject $H_0$. If else, accept $H_0$. 
-```{r paired_t-test}
-
+result:  t = -4.3145, df = 9, p-value = 0.001949
+We can reject $H_0$, at 95% confidence level. Conclude that the BMI of the 10 women have increased after 6 years quitting smoking.
+```{r paired_t-test, include = FALSE}
+library(tidyverse)
+smoking_data = read_csv(file = "./HeavySmoke.csv") %>% 
+  janitor::clean_names() 
+t.test(smoking_data$bmi_base, smoking_data$bmi_6yrs, paired=T)
 ```
 
+2. The changes of weight in each group follows a t distribution with 9 degree of freedom.
+Hypothesis: $H_0$: $\Delta_1 = \Delta_2$, $H_1$, $\Delta_1 \neq \Delta_2$.
+$\Delta_1 \sim N(\Delta_1, \sigma_{d1}^2)$, $\Delta_2 \sim N(\Delta_2, \sigma_{d2}^2)$.
+Test of equality of variance: $F = \frac{\sigma_{d1}^2}{\sigma_{d2}^2} \sim F_{9,9}$
+$\sigma_{d1} = 4.313$, $\sigma_{d2} = 2.808$ $F = 2.360 < F_{9,9,0.975} = 4.026$ so we consider $\sigma_{d1} = \sigma_{d2}$, $s^2 = \frac{9s_1^2 + 9s_2^2}{9+9}, s = 3.640$.
+$t = \frac{\bar\Delta_1 - \bar\Delta_2}{s\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}}= \frac{-3.36 - (-1.55)}{3.640\sqrt{\frac{1}{10}+\frac{1}{10}}}=-1.112, |t|<2.101=t_{18,0.975}$. So we should accept $H_0$, the BMI changes in smoking groups has no stastical difference compared to the BMI change of a nonsmoking control group of same age.
+```{r t-test, include = FALSE}
+rm(list=ls())
+library(tidyverse)
+never_smoking_data = read_csv(file = "./NeverSmoke.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(bmi_diff = bmi_base - bmi_6yrs)
+diff_mean_2 = mean(never_smoking_data$bmi_diff)
+diff_sdr_2 = sqrt(sum(never_smoking_data$bmi_diff^2)/9)
+smoking_data = read_csv(file = "./HeavySmoke.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(bmi_diff = bmi_base - bmi_6yrs)
+diff_mean_1 = mean(smoking_data$bmi_diff)
+diff_sdr_1 = sqrt(sum(smoking_data$bmi_diff^2)/9)
 
+F_test = diff_sdr_1^2/diff_sdr_2^2
+F_crit = qf(.975, df1=9, df2=9) 
 
+s = sqrt(((diff_sdr_1)^2+(diff_sdr_2)^2)/2)
+t_test = (diff_mean_1-diff_mean_2)/(s*(sqrt(1/10+1/10)))
+t_crit = qt(0.975,18)
+ci_95 = c(diff_mean_1-diff_mean_2-t_crit*s*(sqrt(1/10+1/10)), diff_mean_1-diff_mean_2+t_crit*s*(sqrt(1/10+1/10)))
+```
+3. 95% CI is $(\bar\Delta_1 - \bar\Delta_2 + t_{18,0.975}*s\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}, \bar\Delta_1 - \bar\Delta_2 - t_{18,0.975}*s\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}) = (-5.23, 1.61)$
+The 95% CI contains 0, also means the two mean of changes in BMI in smoking and non smoking groups have no statistical difference at 95% confidence level.
 
+4. 
+a. If I can design the new study, I want to match the two groups as much as possible in other facters that impact weight change. For example genetic background(family history, race), change of diet, activity levels, last but not least, the progress of menopause is especially a cofounding factor for women in this age range. The more controled is the cofounding factors, the stronger association we can get from the difference of BMI change with smoking and quitting. We could also set amount of tobaco consumption at different levels as a factor, or se if different baseline BMI has different amount of change.
+The most common bias could be the inappropriate selection of control groups, which may jeopardize the comparability of the two groups. Cherry picking of data, and inflation of type I error due to multiple comparison.
 
-
+b. 
 
 
 ```{r setup, include=FALSE}
