@@ -1,0 +1,76 @@
+---
+title: "P8130_Homework_3"
+author: "Chunxiao Zhai"
+date: "10/10/2018"
+output: pdf_document
+---
+
+#Problem 1
+1. for$\bar{X} =  \frac{1}{n}\sum_{i=1}^{n}X_{\text{i}}= EX$,
+$$
+for \bar{X} =  \frac{1}{n}\sum_{i=1}^{n}X_{\text{i}}= EX,
+
+\begin{aligned}
+E(S^2) &= E(\frac{1}{n-1} \sum_{i=1}^{n}(X_i-\bar{X})^2)\\
+&=\frac{n}{n-1} E(\frac{1}{n}\sum_{i=1}^{n}(X_i-\bar{X})^2))\\
+&=\frac{n}{n-1} E[E(X_i}^2-2\bar{X}X_i+\bar{X}^2)]\\
+&=\frac{n}{n-1} E(E(X^2)-2\bar{X}EX+\barX^2)\\
+&=\frac{n}{n-1} (EX^2-\barX^2)\\
+\end{aligned}
+$$
+2. 
+$$
+\begin{aligned}
+\sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} - \bar{\bar{y}})^2
+&= \sum_{i=1}^{k}\sum_{j=1}^{n_i}[(y_{ij} - \bar{y_i}) + (\bar{y_i} - \bar{\bar{y}})]^2\\ 
+&= \sum_{i=1}^{k}\sum_{j=1}^{n_i}[(y_{ij} - \bar{y_i})^2 + 2(y_{ij} -\bar{y_i})(\bar{y_i} - \bar{\bar{y}}) + (\bar{y_i} - \bar{\bar{y}})^2]\\
+&= \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} -\bar{y_i})^2 + 2\sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} -\bar{y_i})(\bar{y_i} - \bar{\bar{y}}) + \sum_{i=1}^{k}\sum_{j=1}^{n_i}(\bar{y_i} - \bar{\bar{y}})^2\\
+
+
+\sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} -\bar{y_i})(\bar{y_i} - \bar{\bar{y}}) &=\sum_{i=1}^{k}[(\bar{y_i} - \bar{\bar{y}})\sum_{j=1}^{n_i}(y_{ij} -\bar{y_i})]\\
+&=\sum_{i=1}^{k}(\bar{y_i} - \bar{\bar{y}})(n_i\bar{y_i} - n_i\bar{y_i})\\
+&=0\\
+
+\Rightarrow \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} - \bar{\bar{y}})^2 &= \sum_{i=1}^{k}\sum_{j=1}^{n_i}(y_{ij} -\bar{y_i})^2 + \sum_{i=1}^{k}\sum_{j=1}^{n_i}(\bar{y_i} - \bar{\bar{y}})^2\\
+\end{aligned}
+$$
+#Problem 2
+1. Hypothesis test: $H_0$ : BMI_base = BMI_6yrs, $\Delta = 0$;  $H_1$: BMI_base $\neq$ BMI_6yrs, $\Delta \neq 0$.
+$$
+t = \frac{\bar{d}-0}{S_d/\sqrt{n}}  \sim t_{(n-1)} 
+$$
+If $|t| > t_{n-1},_{1-2/\alpha}$, we can reject $H_0$. If else, accept $H_0$. 
+```{r paired_t-test}
+
+```
+
+
+
+
+
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
