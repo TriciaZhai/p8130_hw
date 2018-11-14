@@ -53,7 +53,16 @@ E[\hat{\beta_{0}}]=E[\bar{Y}-\hat{\beta_{1}}\bar{X}]=\bar{Y}-E[\hat{\beta_{1}}\b
 $$
 
 b) Write the Least Squares line equation and show that it always goes through the point ($\bar{X}, \bar{Y}$).(2p)
-Least Squares line equation is: $\hat{Y_{i}}=\hat{\beta_{1}}X_{i}+\hat{\beta_{0}}$. When plug in $Y=\bar{Y}, X=\bar{X}$, it is$\bar{Y}=\hat{\beta_{1}}\bar{X}+\hat{\beta_{0}}$. This is the formular we used to solve the $\hat{\beta_{0}}$, so it is always true for any pair of solved $\hat{\beta_{0}}, \hat{\beta_{1}}$, which means the line always goes through point ($\bar{X}, \bar{Y}$).
+Least Squares line equation is: $\hat{Y}=\hat{\beta_{1}}X+\hat{\beta_{0}}$. 
+When deriving $\beta_{0}, \beta_{1}$, the partial derivatives were set to 0, in which:
+$$
+Q = \sum_{i=1}^{n}(Y_i-\beta_0-\beta_1X_i)^2\\
+\frac{\partial Q}{\partial \beta_0} = -2\sum_{i=1}^{n}(Y_i-\beta_0-\beta_1X_i)=0\\
+\Rightarrow  \sum_{i=1}^{n}Y_i-n\beta_{0}-\beta_{1}\sum_{i=1}^{n}X_i=0
+$$
+For $\beta_{0}, \beta_{1}$ solved to minimize Q as $\hat{\beta_{0}}, \hat{\beta_{1}}$, $\sum_{i=1}^{n}Y_i = \hat{\beta_{1}}\sum_{i=1}^{n}X_i+n\hat{\beta_{0}}$, thus $\bar{Y}=\hat{\beta_{1}}\bar{X}+\hat{\beta_{0}}$, for $X=\bar{X}$, $\hat{Y}=\bar{Y}$, point ($\bar{X}, \bar{Y}$) is on the Least Squares line.
+
+$\bar{Y}=\hat{\beta_{1}}\bar{X}+\hat{\beta_{0}}$ is the formular used to solve the $\hat{\beta_{0}}$, so it is always true for any pair of solved $\hat{\beta_{0}}, \hat{\beta_{1}}$, which means the line always goes through point ($\bar{X}, \bar{Y}$).
 
 c) Use maximum likelihood method to derive an estimator of $\sigma^2$. Find its expected value and comment on the unbiasness property. (3p)
 for $Y_{i} = \beta_{0} + \beta_{1}X_{i}+\epsilon_{i}, \epsilon_{i} \sim N(0, \sigma^{2})$, $Y_{i} \sim N(\beta_{0}+\beta_{1}X_{i}, \sigma^{2})$, the probability density function for the ith observation $(X_{i},Y_{i})$ is:
@@ -80,11 +89,17 @@ $$
 The estimators of $\beta_{0}, \beta_{1}$ are the same in Maximum Likelihood Estimation method and the Least Squares Estimation method, so:
 $$
 \hat{\sigma}^2 = \frac{\sum_{i=1}^{n}(Y_{i}-\hat{\beta_{0}}-\hat{\beta_{1}}X_{i})^2}{n}\\
-E[\hat{\sigma}^2]=E[\frac{\sum_{i=1}^{n}{e_{i}}^2}{n}]=
+E[\hat{\sigma}^2]=E[\frac{\sum_{i=1}^{n}{(Y_{i}-\hat{Y_{i}})}^2}{n}]=\frac{E[\sum_{i=1}^{n}{e_{i}}^2]}{n}=\frac{E[SSE]}{n}
 $$
+For $MSE = SSE/df = SSE/(n-2)$, $E[MSE]=\sigma^2$ the expected value of LSE estimator of variance is: 
+$$
+E[\hat{\sigma}^2]=\frac{(n-2)E[MSE]}{n}=\frac{(n-2)}{n}\sigma^2
+$$
+It is unbiased only when n is a large number.
+
+
 
 For all problems below, assume a significance level of 0.05 unless stated otherwise. You can use R to perform the analyses, but you need to write the hypotheses where specified.
-
 
 ##Problem 2 (25p)
 For this problem, you will be using data ‘HeartDisease.csv’. The investigator is mainly interested if there is an association between ‘total cost’ (in dollars) of patients diagnosed with heart disease and the ‘number of emergency room (ER) visits’. Further, the model will need to be adjusted for other factors, including ‘age’, ‘gender’, ‘number of complications’ that arose during treatment, and ‘duration of treatment condition’.
