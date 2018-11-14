@@ -1,0 +1,116 @@
+---
+title: "p8130_hw_4"
+author: "Chunxiao Zhai cz2544"
+date: "11/8/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Problem 1 (10p):
+Consider the simple linear regression model:
+$$
+Y_{i} = \beta_{0}+\beta_{1}X_{i}+\epsilon_{i}, \epsilon_{i} \sim N(0, \sigma^{2})
+$$
+The ‘estimated errors’ of the model are called residuals and denoted by $e_{i} = Y_{i} - \hat{Y_{i}}$ .
+
+a) Write (not derive) the Least Squares estimators of $\beta_{0}, \beta_{1}$ are unbiased estimators of the true model parameters – do not use matrix notation! (5p)
+
+$$
+\hat{\beta_{1}}=\frac{\sum_{i=1}^{n}(X_{i}-\bar{X})(Y_{i}-\bar{Y})}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}\\
+\hat{\beta_{0}}=\bar{Y}-\hat{\beta_{1}}\bar{X}
+$$
+They are unbiased estimators of the true model parameters in that:
+
+$$
+\sum_{i=1}^{n}(X_{i}-\bar{X})=0 \Rightarrow \bar{Y}\sum_{i=1}^{n}(X_{i}-\bar{X})=0\\
+\Rightarrow \hat{\beta_{1}}=\frac{\sum_{i=1}^{n}(X_{i}-\bar{X})Y_{i}}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}\\
+$$
+For all $X_{i}$s have been observed,  let$\frac{(X_{i}-\bar{X})}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}=c_{i}$, then:
+
+$$
+\hat{\beta_{1}}=\sum_{i=1}^{n}c_{i}Y_{i}\\
+E[\hat{\beta_{1}}]=\sum_{i=1}^{n}E[c_{i}Y_{i}]=\sum_{i=1}^{n}E[c_{i}(\beta_{0}+\beta_{1}X_{i}+\epsilon_{i})]\\
+=\beta_{0}\sum_{i=1}^{n}c_{i}+\beta_{1}\sum_{i=1}^{n}E[c_{i}X_{i}]+\sum_{i=1}^{n}E[c_{i}\epsilon_{i}]
+$$
+With $\sum_{i=1}^{n}c_{i}=0$, each $c_{i}$ and $X_{i}$ known, $E[\epsilon_{i}]=0$,
+
+$$
+E[\hat{\beta_{1}}]=\beta_{1}\sum_{i=1}^{n}c_{i}X_{i}+\sum_{i=1}^{n}c_{i}E[\epsilon_{i}]=
+\beta_{1}\sum_{i=1}^{n}c_{i}X_{i}\\
+=\beta_{1}\frac{\sum_{i=1}^{n}(X_{i}-\bar{X})X_{i}}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}
+=\beta_{1}\frac{\sum_{i=1}^{n}(X_{i}-\bar{X})(X_{i}-\bar{X})}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}
+=\beta_{1}\\
+$$
+$\hat{\beta_{1}}=\bar{Y}-\hat{\beta_{1}}\bar{X}$, with$\bar{Y}=\beta_{0}+\beta{1}\bar{X}$,
+
+$$
+E[\hat{\beta_{0}}]=E[\bar{Y}-\hat{\beta_{1}}\bar{X}]=\bar{Y}-E[\hat{\beta_{1}}\bar{X}]\\
+=\beta_{0}+\beta_{1}\bar{X}-E[\hat{\beta_{1}}]\bar{X}=\beta_{0}
+$$
+
+b) Write the Least Squares line equation and show that it always goes through the point ($\bar{X}, \bar{Y}$).(2p)
+Least Squares line equation is: $\hat{Y_{i}}=\hat{\beta_{1}}X_{i}+\hat{\beta_{0}}$. When plug in $Y=\bar{Y}, X=\bar{X}$, it is$\bar{Y}=\hat{\beta_{1}}\bar{X}+\hat{\beta_{0}}$. This is the formular we used to solve the $\hat{\beta_{0}}$, so it is always true for any pair of solved $\hat{\beta_{0}}, \hat{\beta_{1}}$, which means the line always goes through point ($\bar{X}, \bar{Y}$).
+
+c) Use maximum likelihood method to derive an estimator of $\sigma^2$. Find its expected value and comment on the unbiasness property. (3p)
+for $Y_{i} = \beta_{0} + \beta_{1}X_{i}+\epsilon_{i}, \epsilon_{i} \sim N(0, \sigma^{2})$, $Y_{i} \sim N(\beta_{0}+\beta_{1}X_{i}, \sigma^{2})$, the probability density function for the ith observation $(X_{i},Y_{i})$ is:
+
+$$
+f_{i} = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2}(\frac{Y_{i}-\beta_{0}-\beta_{1}X_{i}}{\sigma})^2}
+$$
+The likelihood function:
+$$
+L(\beta_{0},\beta{1}, \sigma)
+=\prod_{i = 1}^{n}f_{i}
+=(\sigma\sqrt{2\pi})^{-n}\prod_{i = 1}^{n}e^{-\frac{1}{2}(\frac{Y_{i}-\beta_{0}-\beta_{1}X_{i}}{\sigma})^2}
+$$
+The log-likelihood function:
+$$
+l=ln(L)=-n*ln(\sigma\sqrt{2\pi})+\sum_{i=1}^{n}-\frac{1}{2}(\frac{Y_{i}-\beta_{0}-\beta_{1}X_{i}}{\sigma})^2
+$$
+to maximize likelihood all partial derivatives are set to 0, in which:
+$$
+\frac{\partial l}{\partial \sigma} 
+=-\frac{n}{\sigma}+\sum_{i=1}^{n}\frac{(Y_{i}-\hat{\beta_{0}}-\hat{\beta_{1}}X_{i})^2}{{\sigma}^{-3}}
+=0
+$$
+The estimators of $\beta_{0}, \beta_{1}$ are the same in Maximum Likelihood Estimation method and the Least Squares Estimation method, so:
+$$
+\hat{\sigma}^2 = \frac{\sum_{i=1}^{n}(Y_{i}-\hat{\beta_{0}}-\hat{\beta_{1}}X_{i})^2}{n}\\
+E[\hat{\sigma}^2]=E[\frac{\sum_{i=1}^{n}{e_{i}}^2}{n}]=
+$$
+
+For all problems below, assume a significance level of 0.05 unless stated otherwise. You can use R to perform the analyses, but you need to write the hypotheses where specified.
+
+
+##Problem 2 (25p)
+For this problem, you will be using data ‘HeartDisease.csv’. The investigator is mainly interested if there is an association between ‘total cost’ (in dollars) of patients diagnosed with heart disease and the ‘number of emergency room (ER) visits’. Further, the model will need to be adjusted for other factors, including ‘age’, ‘gender’, ‘number of complications’ that arose during treatment, and ‘duration of treatment condition’.
+a) Provide a short description of the data set: what is the main outcome, main predictor and other important covariates. Also, generate appropriate descriptive statistics for all variables of interest (continuous and categorical) – no test required. (5p)
+b) Investigate the shape of the distribution for variable ‘total cost’ and try different transformations, if needed. (2p)
+c) Create a new variable called ‘comp_bin’ by dichotomizing ‘complications’: 0 if no complications, and 1 otherwise. (1p)
+d) Based on our decision in part b), fit a simple linear regression (SLR) between the original or transformed ‘total cost’ and predictor ‘ERvisits’. This includes a scatterplot and results of the regression, with appropriate comments on significance and interpretation of the slope. (5p)
+e) Fit a multiple linear regression (MLR) with ‘comp_bin’ and ‘ERvisits’ as predictors.
+i) Test if ‘comp_bin’ is an effect modifier of the relationship between ‘total cost’ and ‘ERvisits’. Comment. (2p)
+ii)Test if ‘comp_bin’ is a confounder of the relationship between ‘total cost’ and ‘ERvisits’.Comment. (2p)
+iii) Decide if ‘comp_bin’ should be included along with ‘ERvisits. Why or why not?(1p)
+f) Use your choice of model in part e) and add additional covariates (age, gender, and duration of treatment).
+i) Fit a MLR, show the regression results and comment. (5p)
+ii) Compare the SLR and MLR models. Which model would you use to address the
+investigator’s objective and why? (2p)
+
+
+
+##Problem 3 (15p)
+A hospital administrator wishes to test the relationship between ‘patient’s satisfaction’ (Y) and ‘age’, ‘severity of illness’, and ‘anxiety level’ (data ‘PatSatisfaction.xlsx’). The administrator randomly selected 46 patients, collected the data, and asked for your help with the analysis.
+a) Create a correlation matrix and interpret your initial findings. (2p)
+b) Fit a multiple regression model and test whether there is a regression relation. State the
+hypotheses, decision rule and conclusion. (3p)
+c) Show the regression results for all estimated coefficients with 95% CIs. Interpret the coefficient
+and 95% CI associated with ‘severity of illness’. (5p)
+d) Obtain an interval estimate for a new patient’s satisfaction when Age=35, Severity=42,
+Anxiety=2.1. Interpret the interval. (2p)
+e) Test whether ‘anxiety level’ can be dropped from the regression model, given the other two
+covariates are retained. State the hypotheses, decision rule and conclusion. (3p)
