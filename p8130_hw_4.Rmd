@@ -226,7 +226,6 @@ p_strat =
   geom_smooth(method = lm) +
   labs(title = "totalcost ~ ERvisits SLR with or without complication",
        y = "log (total cost)") +
-  geom_text(x = 25, y = 300, label = lm_eqn(heart_data_log), parse = TRUE) +
   facet_grid(~ comp_bin)
 
 p_strat
