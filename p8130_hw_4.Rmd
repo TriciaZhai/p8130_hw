@@ -360,9 +360,20 @@ Both age and anxiety are significant when remove severity from the MLR, the adju
 c) Show the regression results for all estimated coefficients with 95% CIs. Interpret the coefficient
 and 95% CI associated with ‘severity of illness’. (5p)
 
+```{r CI}
+confint(fit_stf_1, level = 0.95)
+```
+
+The Intercept is the expactation of mean value of Safisfaction without considering predictors, we are 95% confident that it is in (121.911727 195.0707761), with age increase by 1, expactation of mean value of Safisfaction will decrease by 1.14, 95% condifent in (-1.575093  -0.7081303), with the anxiety level increase by 1,  expactation of mean value of Safisfaction will decrease by 13.5, 95% condifent in(-27.797859   0.8575324). 
+
+The 95% CI associated with ‘severity of illness’ contain 0, indicate is is not significant, for it could change the satisfaction to either directions.
 
 d) Obtain an interval estimate for a new patient’s satisfaction when Age=35, Severity=42,
 Anxiety=2.1. Interpret the interval. (2p)
+
+```{r}
+#predict.lm(fit_stf_2, newdata = new, interval = "confidence")
+```
 
 
 e) Test whether ‘anxiety level’ can be dropped from the regression model, given the other two
