@@ -1,0 +1,400 @@
+---
+title: "p8130_hw_4"
+author: "Chunxiao Zhai cz2544"
+date: "11/8/2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggridges)
+library(viridis)
+library(patchwork)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "95%"
+)
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+##Problem 1 (10p):
+Consider the simple linear regression model:
+$$
+Y_{i} = \beta_{0}+\beta_{1}X_{i}+\epsilon_{i}, \epsilon_{i} \sim N(0, \sigma^{2})
+$$
+The 'estimated errors' of the model are called residuals and denoted by $e_{i} = Y_{i} - \hat{Y_{i}}$ .
+
+a) Write (not derive) the Least Squares estimators of $\beta_{0}, \beta_{1}$ are unbiased estimators of the true model parameters ' do not use matrix notation! (5p)
+
+$$
+\hat{\beta_{1}}=\frac{\sum_{i=1}^{n}(X_{i}-\bar{X})(Y_{i}-\bar{Y})}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}\\
+\hat{\beta_{0}}=\bar{Y}-\hat{\beta_{1}}\bar{X}
+$$
+They are unbiased estimators of the true model parameters in that:
+
+$$
+\sum_{i=1}^{n}(X_{i}-\bar{X})=0 \Rightarrow \bar{Y}\sum_{i=1}^{n}(X_{i}-\bar{X})=0\\
+\Rightarrow \hat{\beta_{1}}=\frac{\sum_{i=1}^{n}(X_{i}-\bar{X})Y_{i}}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}\\
+$$
+For all $X_{i}$s have been observed,  let$\frac{(X_{i}-\bar{X})}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}=c_{i}$, then:
+
+$$
+\hat{\beta_{1}}=\sum_{i=1}^{n}c_{i}Y_{i}\\
+E[\hat{\beta_{1}}]=\sum_{i=1}^{n}E[c_{i}Y_{i}]=\sum_{i=1}^{n}E[c_{i}(\beta_{0}+\beta_{1}X_{i}+\epsilon_{i})]\\
+=\beta_{0}\sum_{i=1}^{n}c_{i}+\beta_{1}\sum_{i=1}^{n}E[c_{i}X_{i}]+\sum_{i=1}^{n}E[c_{i}\epsilon_{i}]
+$$
+With $\sum_{i=1}^{n}c_{i}=0$, each $c_{i}$ and $X_{i}$ known, $E[\epsilon_{i}]=0$,
+
+$$
+E[\hat{\beta_{1}}]=\beta_{1}\sum_{i=1}^{n}c_{i}X_{i}+\sum_{i=1}^{n}c_{i}E[\epsilon_{i}]=
+\beta_{1}\sum_{i=1}^{n}c_{i}X_{i}\\
+=\beta_{1}\frac{\sum_{i=1}^{n}(X_{i}-\bar{X})X_{i}}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}
+=\beta_{1}\frac{\sum_{i=1}^{n}(X_{i}-\bar{X})(X_{i}-\bar{X})}{\sum_{i=1}^{n}(X_{i}-\bar{X})^2}
+=\beta_{1}\\
+$$
+$\hat{\beta_{1}}=\bar{Y}-\hat{\beta_{1}}\bar{X}$, with$\bar{Y}=\beta_{0}+\beta{1}\bar{X}$,
+
+$$
+E[\hat{\beta_{0}}]=E[\bar{Y}-\hat{\beta_{1}}\bar{X}]=\bar{Y}-E[\hat{\beta_{1}}\bar{X}]\\
+=\beta_{0}+\beta_{1}\bar{X}-E[\hat{\beta_{1}}]\bar{X}=\beta_{0}
+$$
+
+b) Write the Least Squares line equation and show that it always goes through the point ($\bar{X}, \bar{Y}$).(2p)
+Least Squares line equation is: $\hat{Y}=\hat{\beta_{1}}X+\hat{\beta_{0}}$. 
+When deriving $\beta_{0}, \beta_{1}$, the partial derivatives were set to 0, in which:
+$$
+Q = \sum_{i=1}^{n}(Y_i-\beta_0-\beta_1X_i)^2\\
+\frac{\partial Q}{\partial \beta_0} = -2\sum_{i=1}^{n}(Y_i-\beta_0-\beta_1X_i)=0\\
+\Rightarrow  \sum_{i=1}^{n}Y_i-n\beta_{0}-\beta_{1}\sum_{i=1}^{n}X_i=0
+$$
+For $\beta_{0}, \beta_{1}$ solved to minimize Q as $\hat{\beta_{0}}, \hat{\beta_{1}}$, $\sum_{i=1}^{n}Y_i = \hat{\beta_{1}}\sum_{i=1}^{n}X_i+n\hat{\beta_{0}}$, thus $\bar{Y}=\hat{\beta_{1}}\bar{X}+\hat{\beta_{0}}$, for $X=\bar{X}$, $\hat{Y}=\bar{Y}$, point ($\bar{X}, \bar{Y}$) is on the Least Squares line.
+
+$\bar{Y}=\hat{\beta_{1}}\bar{X}+\hat{\beta_{0}}$ is the formular used to solve the $\hat{\beta_{0}}$, so it is always true for any pair of solved $\hat{\beta_{0}}, \hat{\beta_{1}}$, which means the line always goes through point ($\bar{X}, \bar{Y}$).
+
+c) Use maximum likelihood method to derive an estimator of $\sigma^2$. Find its expected value and comment on the unbiasness property. (3p)
+for $Y_{i} = \beta_{0} + \beta_{1}X_{i}+\epsilon_{i}, \epsilon_{i} \sim N(0, \sigma^{2})$, $Y_{i} \sim N(\beta_{0}+\beta_{1}X_{i}, \sigma^{2})$, the probability density function for the ith observation $(X_{i},Y_{i})$ is:
+
+$$
+f_{i} = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2}(\frac{Y_{i}-\beta_{0}-\beta_{1}X_{i}}{\sigma})^2}
+$$
+The likelihood function:
+$$
+L(\beta_{0},\beta{1}, \sigma)
+=\prod_{i = 1}^{n}f_{i}
+=(\sigma\sqrt{2\pi})^{-n}\prod_{i = 1}^{n}e^{-\frac{1}{2}(\frac{Y_{i}-\beta_{0}-\beta_{1}X_{i}}{\sigma})^2}
+$$
+The log-likelihood function:
+$$
+l=ln(L)=-n*ln(\sigma\sqrt{2\pi})+\sum_{i=1}^{n}-\frac{1}{2}(\frac{Y_{i}-\beta_{0}-\beta_{1}X_{i}}{\sigma})^2
+$$
+to maximize likelihood all partial derivatives are set to 0, in which:
+$$
+\frac{\partial l}{\partial \sigma} 
+=-\frac{n}{\sigma}+\sum_{i=1}^{n}\frac{(Y_{i}-\hat{\beta_{0}}-\hat{\beta_{1}}X_{i})^2}{{\sigma}^{-3}}
+=0
+$$
+The estimators of $\beta_{0}, \beta_{1}$ are the same in Maximum Likelihood Estimation method and the Least Squares Estimation method, so:
+$$
+\hat{\sigma}^2 = \frac{\sum_{i=1}^{n}(Y_{i}-\hat{\beta_{0}}-\hat{\beta_{1}}X_{i})^2}{n}\\
+E[\hat{\sigma}^2]=E[\frac{\sum_{i=1}^{n}{(Y_{i}-\hat{Y_{i}})}^2}{n}]=\frac{E[\sum_{i=1}^{n}{e_{i}}^2]}{n}=\frac{E[SSE]}{n}
+$$
+For $MSE = SSE/df = SSE/(n-2)$, $E[MSE]=\sigma^2$ the expected value of LSE estimator of variance is: 
+$$
+E[\hat{\sigma}^2]=\frac{(n-2)E[MSE]}{n}=\frac{(n-2)}{n}\sigma^2
+$$
+It is unbiased only when n is a large number.
+
+
+
+For all problems below, assume a significance level of 0.05 unless stated otherwise. You can use R to perform the analyses, but you need to write the hypotheses where specified.
+
+##Problem 2 (25p)
+For this problem, you will be using data 'HeartDisease.csv'. The investigator is mainly interested if there is an association between 'total cost' (in dollars) of patients diagnosed with heart disease and the 'number of emergency room (ER) visits'. Further, the model will need to be adjusted for other factors, including 'age', 'gender', 'number of complications' that arose during treatment, and 'duration of treatment condition'.
+
+a) Provide a short description of the data set: what is the main outcome, main predictor and other important covariates. Also, generate appropriate descriptive statistics for all variables of interest (continuous and categorical) ' no test required. (5p)
+
+```{r load_data}
+heart_data = read.csv(file = "./HeartDisease.csv")
+```
+
+This data set contains `r nrow(heart_data)` observations of `r ncol(heart_data)` variables: `r names(heart_data)`. Among these, the main outcome is "total cost" with mean of `r mean(heart_data$totalcost)`, and standard error of`r sd(heart_data$totalcost)`, the main predictor is "ERvisits", with mean of `r mean(heart_data$ERvisits)` and standard error of`r sd(heart_data$ERvisits)`,. In all other variables, gender is the only categorical variable with `r sum(heart_data$gender)` males and `r sum(heart_data$gender==0)` females. The descriptive statistics for all variables of interest are listed in the table below:
+
+```{r discribe_data}
+heart_data %>% 
+  select(-gender, -id) %>% 
+  skimr::skim() %>% 
+  filter(stat %in% c("n", "mean", "sd", "p25", "p50", "p75")) %>% 
+  group_by(variable, type) %>% 
+  nest(stat, formatted) %>% unnest() %>% spread(stat, formatted) %>%
+  select(variable, type, n, mean, sd, everything()) %>% 
+  knitr::kable(digits = 1)
+```
+
+b) Investigate the shape of the distribution for variable 'total cost' and try different transformations, if needed. (2p)
+
+```{r distribution}
+heart_data %>% 
+  ggplot(aes(x = totalcost)) +
+  geom_histogram(bins = 200) +
+  labs(title = "distribution of total cost",
+       x = "total cost")
+```
+
+The histogram shows that the distribution of 'total cost' is very right skewed, with majority of observations less than 508. 
+
+Try logarithm transformation :
+
+```{r log_trans}
+log = heart_data %>% 
+  mutate(log_tolcost = log(totalcost)) %>% 
+  ggplot(aes(x = log_tolcost)) +
+  geom_histogram(bins = 200) +
+  labs(title = "distribution of logarithm transformation of total cost",
+       x = "log (total cost)")
+log
+```
+
+The transformed variavle have a good bell curve distribution, although still has some outliers.
+
+Try inverse transformation :
+
+```{r inverse_trans}
+inv = heart_data %>% 
+  mutate(inverse_tolcost = 1/totalcost) %>% 
+  ggplot(aes(x = inverse_tolcost)) +
+  geom_histogram(bins = 200) +
+  labs(title = "distribution of inverse transformation of total cost",
+       x = "reciprical of total cost")
+inv
+```
+
+The distribution of recipricals of totalcost is still extremely right skewed, this transformation is not effective.
+
+Try cube root transformation :
+
+```{r cbrt_trans}
+cbrt = heart_data %>% 
+  mutate(cbrt_tolcost = totalcost^(1/3)) %>% 
+  ggplot(aes(x = cbrt_tolcost)) +
+  geom_histogram(bins = 200) +
+  labs(title = "distribution of cube root transformation of total cost",
+       x = "cube root of total cost")
+cbrt
+```
+
+This transformation is better than inverse transformation, but the transformed distribution is still right skewed. The square root transformation will be weaker than cube root. 
+The logarithm transformation is the best way to approach narmality in this case.
+
+c) Create a new variable called 'comp_bin' by dichotomizing 'complications': 0 if no complications, and 1 otherwise. (1p)
+
+```{r dichotomize_comp}
+heart_data = heart_data %>% 
+  mutate(comp_bin = if_else(complications == 0, 0, 1))
+```
+
+d) Based on our decision in part b), fit a simple linear regression (SLR) between the original or transformed 'total cost' and predictor 'ERvisits'. This includes a scatterplot and results of the regression, with appropriate comments on significance and interpretation of the slope. (5p)
+
+```{r slr}
+heart_data_log = heart_data %>% 
+  mutate(totalcost = if_else(totalcost == 0, 0.001, totalcost),
+         log_tolcost = log(totalcost)) 
+
+fit_slr_trans = lm(log_tolcost ~ ERvisits, data = heart_data_log)
+
+scatter_trans = ggplot(data = heart_data_log, aes(x = ERvisits, y = log_tolcost)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  labs(title = "totalcost ~ ERvisits SLR",
+       y = "log (total cost)")
+
+scatter_trans
+summary(fit_slr_trans)
+
+beta_transback = broom::tidy(fit_slr_trans) %>% pull(estimate) %>% exp()
+beta_transback
+```
+
+comments : The value of slope(1.25) is the change in the ratio of the expected geometric means of 'total cost' as 'ERvisits' increase by 1. The intercept(243.2) is the geometric mean of 'total cost'. The Pr(>|t|) is the chance to observe this value of 1.25 when we assume the slope is 0, it is <2e-16. The model is significant with $\alpha$ = 0.05
+
+e) Fit a multiple linear regression (MLR) with 'comp_bin' and 'ERvisits' as predictors.
+
+```{r mlr}
+fit_mlr_trans = lm(log_tolcost ~ ERvisits + comp_bin , data = heart_data_log)
+summary(fit_mlr_trans)
+```
+
+The MLR model is $log(total\ cost) = 5.5 + 0.2*ERvisits + 1.7*comp\_bin$
+
+i) Test if 'comp_bin' is an effect modifier of the relationship between 'total cost' and 'ERvisits'. Comment. (2p)
+
+```{r comp_bin_emm}
+fit_mlr_interact = lm(log_tolcost ~ ERvisits + comp_bin + ERvisits:comp_bin, data = heart_data_log)
+summary(fit_mlr_interact)
+```
+
+'comp_bin' is not an effect modifier of the relationship between 'total cost' and 'ERvisits' at significance level of $\alpha$ = 0.05.
+
+```{r stratified_regression}
+p_strat = 
+  heart_data_log %>% 
+  group_by(comp_bin) %>% 
+  ggplot(aes(x = ERvisits, y = log_tolcost)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  labs(title = "totalcost ~ ERvisits SLR with or without complication",
+       y = "log (total cost)") +
+  facet_grid(~ comp_bin)
+
+p_strat
+
+strat_comp_0 = heart_data_log %>% filter(comp_bin==0) 
+strat_comp_1 = heart_data_log %>% filter(comp_bin==1) 
+fit_comp_0 = lm(log_tolcost ~ ERvisits, data = strat_comp_0) %>% broom::tidy()
+fit_comp_1 = lm(log_tolcost ~ ERvisits, data = strat_comp_1) %>% broom::tidy()
+fit_comp_0
+fit_comp_1
+```
+
+In epidemiology, to decide if a variavle is a effect measurement modifier, we compare the measurement in each stratum to the crude. The stratum without complication has a slope of `r exp(0.208)` which is less than the crude of `r exp(0.225)`, but the difference is less than 10%. While the stratum with complications has a slope of `r exp(0.112)` which is also less than the crude of `r exp(0.225)`, but the difference is about 11%.
+
+ii)Test if 'comp_bin' is a confounder of the relationship between 'total cost' and 'ERvisits'.Comment. (2p)
+
+```{r comp_bin_cfd}
+anova(fit_slr_trans, fit_mlr_trans)
+
+exp(coef(fit_slr_trans)[2])
+exp(coef(fit_mlr_trans)[2])
+1-exp(coef(fit_mlr_trans)[2])/exp(coef(fit_slr_trans)[2])
+```
+
+When add 'comp_bin' into the model, the slope(ratio of the expected geometric means of 'total cost' as 'ERvisits' increase by 1) will decrease from 1.25 to 1.22, by 2.2%. By 10% criterion, not considered as confounder between 'total cost' and 'ERvisits'.
+
+iii) Decide if 'comp_bin' should be included along with 'ERvisits. Why or why not?(1p)
+
+```{r}
+anova(fit_slr_trans, fit_mlr_trans)
+```
+
+'comp_bin' should be included given when add into the model, the adjusted R-squared increase from 0.08359 to 0.1195, the anova test prefer the larger model, and it is a effect measurement modifier in the stratum with complications.
+
+f) Use your choice of model in part e) and add additional covariates (age, gender, and duration of treatment).
+
+i) Fit a MLR, show the regression results and comment. (5p)
+
+```{r mlr_2}
+fit_mlr_add = lm(log_tolcost ~ ERvisits + comp_bin + age + gender + duration ,data = heart_data_log)
+summary(fit_mlr_add)
+
+fit_mlr_add_satuated = lm(log_tolcost ~ ERvisits + comp_bin + age + gender + duration 
+                          + ERvisits*comp_bin + ERvisits*gender 
+                          + comp_bin*age + comp_bin*gender + comp_bin*duration
+                          + age*gender 
+                          + gender*duration
+                          ,data = heart_data_log)
+summary(fit_mlr_add_satuated)
+
+fit_mlr_add_1 = lm(log_tolcost ~ ERvisits + comp_bin + age + gender + duration 
+                          + ERvisits*gender + gender*duration ,data = heart_data_log)
+summary(fit_mlr_add_1)
+
+strat_female = heart_data_log %>% filter(gender==0) 
+strat_male = heart_data_log %>% filter(gender==1) 
+fit_f = lm(log_tolcost ~ ERvisits + comp_bin + age + duration, data = strat_female) %>% broom::tidy()
+fit_m = lm(log_tolcost ~ ERvisits + comp_bin + age + duration, data = strat_male) %>% broom::tidy()
+
+fit_m
+fit_f
+
+fit_m_s = lm(log_tolcost ~ comp_bin + duration, data = strat_male) 
+fit_m_l =lm(log_tolcost ~ ERvisits + comp_bin + age + duration, data = strat_male) 
+anova(fit_m_s, fit_m_l)
+fit_m_s %>% broom::tidy()
+```
+
+The overall model is significant at 0.05 level with adjusted R square of 0.2454, all five variables are significant at level of 0.05 when donot consider interaction. The MLR moedl is: $log(total\ cost) = 5.8 + 0.17ERvisit + 1.53*comp\_bin - 0.02*age -0.32gender + 0.006*duration$.
+But when add in all possible interactions involve categorical variables, only Ervisits:gender, duration:gender and age are significant at level of 0.05. By removing nonsignificant interactions from the MLR, comp_bin become significant again. The final MLR should be stratified by gender. 
+For male, the ERvisit and age are no longer significant at level of 0.05, the anova prefer small model. The MLR moedl for male is: $log(total\ cost\_{male}) = 4.6 + 1.9*comp\_bin + 0.0085*duration$.
+For female, all variables are significant at level of 0.05, The MLR moedl for female is: $log(total\ cost\_{female}) = 6.4 + 0.21*ERvisit + 1.3*comp\_bin -0.027*age + 0.0054*duration$.
+
+ii) Compare the SLR and MLR models. Which model would you use to address the
+investigator's objective and why? (2p)
+
+I would use the MLR models, in that the main outcome of 'total cost' is influenced by different facters in patients of different gender. 'number of emergency room (ER) visits' is not a significant predictor of the main outcome of 'total cost' in male patients but a significant predictor in female patients. While other significant predictors duration and complication are only included in the MLR model. The reletion between ERvisits and total cost could be largely due to the factor of gender but not ERvisit itself. The SLR result is biased.
+
+
+##Problem 3 (15p)
+A hospital administrator wishes to test the relationship between 'patient's satisfaction' (Y) and 'age', 'severity of illness', and 'anxiety level' (data 'PatSatisfaction.xlsx'). The administrator randomly selected 46 patients, collected the data, and asked for your help with the analysis.
+
+```{r load_data_2}
+stf_data = readxl::read_excel("PatSatisfaction.xlsx") %>% janitor::clean_names()
+```
+
+a) Create a correlation matrix and interpret your initial findings. (2p)
+
+```{r correlation}
+round(cor(stf_data),3)
+```
+
+All three factors are inversely correleted with satisfaction but age is the most closely one. Age, severity and anxiety are pairwise correlated with severity and anxiety the most closely one.
+
+b) Fit a multiple regression model and test whether there is a regression relation. State the
+hypotheses, decision rule and conclusion. (3p)
+
+```{r stf_mlr_1}
+fit_stf_1 = lm(safisfaction ~ age + severity + anxiety, data = stf_data)
+summary(fit_stf_1)
+```
+
+Hypotheses: H0: all beta = 0, no linear relation; H1: at least one beta not 0.
+The result show at significant 0.05 only age is a significant variable, but p value for anxiety is 0.065, try to remove severity:
+
+```{r stf_mlr_2}
+fit_stf_2 = lm(safisfaction ~ age + anxiety, data = stf_data)
+summary(fit_stf_2)
+```
+
+Both age and anxiety are significant when remove severity from the MLR, the adjusted R-square in creased form 0.6595 to 0.661. Then MLR model is :$Safisfaction = 145.9 -1.2*age - 16.7*anxiety$
+
+c) Show the regression results for all estimated coefficients with 95% CIs. Interpret the coefficient
+and 95% CI associated with 'severity of illness'. (5p)
+
+```{r CI}
+confint(fit_stf_1, level = 0.95)
+```
+
+The Intercept is the expactation of mean value of Safisfaction without considering predictors, we are 95% confident that it is in (121.911727, 195.0707761), with age increase by 1, expactation of mean value of Safisfaction will decrease by 1.14, 95% condifent in (-1.575093, -0.7081303), with the anxiety level increase by 1,  expactation of mean value of Safisfaction will decrease by 13.5, 95% condifent in(-27.797859, 0.8575324). 
+
+The 95% CI associated with 'severity of illness' contain 0, indicate is is not significant, for it could change the satisfaction to either directions.
+
+d) Obtain an interval estimate for a new patient's satisfaction when Age=35, Severity=42,
+Anxiety=2.1. Interpret the interval. (2p)
+
+```{r predict}
+new = data.frame(age=35, severity = 42, anxiety = 2.1)
+predict.lm(fit_stf_1, newdata = new, interval = "prediction")
+predict.lm(fit_stf_2, newdata = new, interval = "prediction")
+```
+
+We are 95% confident that the new patient's satisfaction is between (50.06237, 93.30426) if all three variables are considered as predictors, or 95% confident that the new patient's satisfaction is between (48.22251 89.31033) if only Age and Anxiety are considered as predictors.
+
+e) Test whether anxiety level can be dropped from the regression model, given the other two
+covariates are retained. State the hypotheses, decision rule and conclusion. (3p)
+
+Hypotheses: 
+H0: model without 'anxiety level' is the same as model with 'anxiety level' (the beta related to anxiety is 0); 
+H1: model without 'anxiety level' and model with 'anxiety level' are different (the beta related to anxiety is not 0).
+
+```{r anxiety}
+fit_stf_1 = lm(safisfaction ~ age + severity + anxiety, data = stf_data)
+fit_stf_3 = lm(safisfaction ~ age + severity, data = stf_data)
+summary(fit_stf_1)
+summary(fit_stf_3)
+anova(fit_stf_3, fit_stf_1)
+```
+
+If the other two covariates are retained, at 95% level of confidence we cannot reject the null hypothesis, the model with or without anxiety are not significantly different. We should keep the model with less variables, drop 'anxiety level'. Adjusted R-square changed from 0.6595 to 0.6389, by only 3%. 
+
+Conclusion: 'anxiety level' can be dropped.
+
